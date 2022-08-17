@@ -1,0 +1,90 @@
+>>> from news.models import *
+>>> User.objects.create_user('Pupa')
+<User: Pupa>
+>>> User.objects.create_user('Lupa')
+<User: Lupa>
+>>> for user in User.objects.all():
+...     Author.objects.create(user=user)
+...
+<Author: Author object (1)>
+<Author: Author object (2)>
+>>> Category.objects.create(name='Истории одна изумительней другой')
+<Category: Category object (1)>
+>>> Category.objects.create(name='Новости нашего Городка')
+<Category: Category object (2)>
+>>> Category.objects.create(name='Курилка')
+<Category: Category object (3)>
+>>> Category.objects.create(name='Флудилка')
+<Category: Category object (4)>
+>>> import requests
+>>> text1 = requests.get('https://baconipsum.com/api/?type=meat-and-filler').text.strip('[]"')
+>>> text2 = requests.get('https://baconipsum.com/api/?type=meat-and-filler').text.strip('[]"')
+>>> text3 = requests.get('https://baconipsum.com/api/?type=meat-and-filler').text.strip('[]"')
+>>> auth1 = Author.objects.get(pk=1)
+>>> auth2 = Author.objects.get(pk=2)
+>>> Post.objects.create(author=auth1, type=article, header='Пкрвая статья', text=text1)
+<Post: Post object (1)>
+>>> Post.objects.create(author=auth1, type=article, header='Вторая статья', text=text2)
+<Post: Post object (2)>
+>>> Post.objects.create(author=auth2, type=news, header='Novost\'', text=text3[::-1])
+<Post: Post object (3)>
+>>> posts = Post.objects.all()
+>>> categories = Category.objects.all()
+>>> posts[0].category.add(categories[0])
+>>> posts[1].category.add(categories[2])
+>>> posts[1].category.add(categories[3])
+>>> posts[2].category.add(categories[1])
+>>> for post in posts:
+...     Comment.objects.create(post=post, author=post.author.user, text='Аффтар жжет пиши исчо')
+...
+<Comment: Comment object (1)>
+<Comment: Comment object (2)>
+<Comment: Comment object (3)>
+>>> for post in posts:
+...     _userid = post.author.user.id
+...     _userid = 3 - _userid
+...     Comment.objects.create(post=post, author=User.objects.get(pk=_userid), text='ФТОПКУ')
+...
+<Comment: Comment object (4)>
+<Comment: Comment object (5)>
+<Comment: Comment object (6)>
+>>> comments =  Comment.objects.all()
+>>> from random import randint
+>>> for post in posts:
+...     for i in range(randint(1,15)):
+...             post.like()
+...     for i in range(randint(1,15)):
+...             post.dislike()
+...
+>>> for comment in comments:
+...     for i in range(randint(1,5)):
+...             comment.like()
+...     for i in range(randint(1,5)):
+...             comment.dislike()
+...
+>>> authors = Author.objects.all()
+>>> for author in authors:
+...     author.update_rating()
+...
+>>> authors = Author.objects.order_by('rank')
+>>> authors[1].update_rating()
+>>> authors = Author.objects.order_by('rank')
+>>> print(f'Лучший автор: {authors[len(authors)-1].user.username}, рейтинг:{authors[len(authors)-1].rank}')
+Лучший автор: Pupa, рейтинг:27
+>>> posts = Post.objects.order_by('rank').filter(type=article)
+>>> bestpost = posts[len(posts)-1]
+>>> print(f'Лучшая статья: опубликована {str(bestpost.created)[:16]} автором {bestpost.author.user.username},
+рейтинг: {bestpost.rank}\n{bestpost.header}\n{bestpost.preview()}')
+Лучшая статья: опубликована 2022-08-17 22:51 автором Pupa, рейтинг: 6
+Пкрвая статья
+Turkey capicola adipisicing tail pork loin elit reprehenderit eiusmod.  In drumstick veniam magna ut burgdogge
+n.  Beef ribs ...
+>>> ba_comments = Comment.objects.filter(post=bestpost)
+>>> for comment in ba_comments:
+...     print(f'{comment.author.username} прокоментировал {str(comment.created)[:16]}, рейтинг: {comment.rank}
+\n{comment.text}')
+...
+Pupa прокоментировал 2022-08-17 22:52, рейтинг: 2
+Аффтар жжет пиши исчо
+Lupa прокоментировал 2022-08-17 22:52, рейтинг: 2
+ФТОПКУ
