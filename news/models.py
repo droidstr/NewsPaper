@@ -21,7 +21,8 @@ class Author(models.Model):
         for post in self.post_set.all():
             rank_update += 3 * post.rank
             for comment in post.comment_set.all():
-                rank_update += comment.rank
+                if comment.author != self.user:
+                    rank_update += comment.rank
         for comment in self.user.comment_set.all():
             rank_update += comment.rank
         self.rank = rank_update
