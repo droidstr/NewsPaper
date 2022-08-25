@@ -1,0 +1,23 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+ 
+<!-- Название у нас будет products -->
+{% block title %}
+Все новости
+{% endblock title %}
+ 
+{% block content %}
+   <h1>Все новости</h1>
+   <h3>Всего статей {{posts|length}}</h3>
+   {% if posts %}
+       <table class="custom-table"> <!-- Начинаем описывать таблицу -->
+           {% for post in posts %}
+           <tr>
+               <td><a class="custom-link" href="/posts/{{post.pk}}">{{ post.header|censor }}</a></td>
+               <td><a class="custom-link" href="/posts/{{post.pk}}">{{ post.created|date:'d.m.Y' }}</a></td>
+               <td><a class="custom-link" href="/posts/{{post.pk}}">{{ post.text|truncatewords:20|censor }}</a></td>
+           </tr>
+           {% endfor %}
+       </table>
+    {% endif %}
+{% endblock content %}
