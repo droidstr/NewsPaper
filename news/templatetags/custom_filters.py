@@ -17,5 +17,3 @@ def censor(text):
     for word in text:
         result += ' ' + word[0] + '*' * (len(word) - 1) if word.capitalize() == word and word[0].isalpha() else ' ' + word
     return result
-    print('filter censor applied to non-string value')
-    return text.strip()
