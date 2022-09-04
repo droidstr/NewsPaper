@@ -11303,3 +11303,9 @@ textarea.form-control-lg {
     padding: 1em;
     text-align: left;
 }
+img.icon {
+    width: 1em;
+}
+h1 img.icon{
+    width: 0.5em;
+}

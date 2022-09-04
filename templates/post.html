@@ -1,12 +1,22 @@
 {% extends 'flatpages/default.html' %}
 {% load custom_filters %}
+{% load custom_tags %}
+{% load static %}
 
 {% block title %}
 {{post.header|censor}}
 {% endblock title %}
 
 {% block content %}
-<h1>{{ post.header|censor }}</h1>
+<h1>
+    {{ post.header|censor }}
+    <a href="/{% make_posttype_url post.type %}/{{post.pk}}/edit" title="edit">
+        <img src="{% static 'icons/pencil.svg' %}" class="icon">
+    </a>
+    <a href="/{% make_posttype_url post.type %}/{{post.pk}}/delete" title="delete">
+        <img src="{% static 'icons/trash.svg' %}" class="icon">
+    </a>
+</h1>
 <h3>{{ post.created|date:'d.m.Y' }}</h3>
 <article>{{ post.text|censor}}</article>
 {% endblock content %}

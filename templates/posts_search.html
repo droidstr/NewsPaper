@@ -1,0 +1,8 @@
+{% extends 'posts.html' %}
+
+{% block filter %}
+    <form action="" method="get">
+        {{ filterset.form.as_p }}
+        <input type="submit" value="Найти" />
+    </form>
+{% endblock filter %}
