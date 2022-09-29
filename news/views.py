@@ -1,7 +1,8 @@
 from django.shortcuts import render
 
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy, get_urlconf
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from .models import Post
 from .forms import PostForm
@@ -15,11 +16,21 @@ class PostsList(ListView):
     context_object_name = 'posts'
     paginate_by = 10
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_author'] = not self.request.user.groups.filter(name='author').exists()
+        return context
+
 
 class PostDetail(DetailView):
     model = Post
     template_name = 'post.html'
     context_object_name = 'post'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_author'] = not self.request.user.groups.filter(name='author').exists()
+        return context
 
 
 class PostSearch(PostsList):
@@ -36,23 +47,43 @@ class PostSearch(PostsList):
         return context
 
 
-class PostCreate(CreateView):
+class PostCreate(PermissionRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = 'post_edit.html'
     context_object_name = 'post'
+    success_url = reverse_lazy('news')
+    permission_required = ('news.add_post',)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_author'] = not self.request.user.groups.filter(name='author').exists()
+        return context
 
 
-class PostEdit(UpdateView):
+class PostEdit(PermissionRequiredMixin, UpdateView):
     form_class = PostForm
     template_name = 'post_edit.html'
     context_object_name = 'post'
+    success_url = reverse_lazy('news')
+    permission_required = ('news.change_post',)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_author'] = not self.request.user.groups.filter(name='author').exists()
+        return context
 
 
-class PostDelete(DeleteView):
+class PostDelete(PermissionRequiredMixin, DeleteView):
     template_name = 'post_delete.html'
     success_url = reverse_lazy('news')
     context_object_name = 'post'
+    permission_required = ('news.delete_post',)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_author'] = not self.request.user.groups.filter(name='author').exists()
+        return context
 
 
 class NewsCreate(PostCreate):

@@ -51,6 +51,9 @@
                                 Добавить статью
                             </a>
                         </li>
+                        {% if is_not_author %}
+                        <li> <a class="nav-link" href="/account/upgrade/">Стать автором</a> </li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
